@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Office Collab Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>Office Collab Lab</h1>
+        <div class="meta">Collabora CODE · Euro-Office</div>
+      </div>
+      <div class="controls">
+        <label>
+          User
+          <select id="user-select"></select>
+        </label>
+        <label>
+          Mode
+          <select id="mode-select">
+            <option value="edit">edit</option>
+            <option value="view">view</option>
+          </select>
+        </label>
+        <button id="btn-refresh" class="secondary" type="button">Refresh</button>
+      </div>
+    </header>
+
+    <main>
+      <aside>
+        <div class="panel">
+          <h2>Engines</h2>
+          <div id="engine-list" class="engine-list"></div>
+        </div>
+        <div class="panel">
+          <h2>Documents</h2>
+          <div class="upload-row">
+            <input id="file-input" type="file" accept=".docx,.xlsx,.pptx,.odt,.ods,.odp,.doc,.xls,.ppt,.csv,.txt,.pdf" />
+            <button id="btn-upload" type="button">Upload</button>
+            <button id="btn-seed" class="secondary" type="button">Reset + seed corpus</button>
+          </div>
+          <div id="doc-list" class="doc-list"></div>
+        </div>
+        <div class="panel">
+          <h2>Smoke checklist</h2>
+          <ul class="checklist" id="checklist">
+            <li>Engine reachable / example loads</li>
+            <li>Open synthetic DOCX / XLSX / PPTX</li>
+            <li>Edit and confirm PutFile or callback</li>
+            <li>Reopen — changes in application storage</li>
+            <li>Record image digest + evidence</li>
+          </ul>
+        </div>
+      </aside>
+
+      <section class="editor-pane panel">
+        <h2>
+          Editor
+          <span id="session-badge" class="badge">no session</span>
+        </h2>
+        <div class="toolbar">
+          <button id="btn-open" type="button" disabled>Open in selected engine</button>
+          <button id="btn-close" class="secondary" type="button">Close editor</button>
+          <a id="link-example" class="badge" href="#" target="_blank" rel="noopener">Vendor example</a>
+        </div>
+        <div class="editor-frame-wrap">
+          <div id="editor-host">
+            <div class="empty-state" id="empty-state">
+              Select an engine and a document, then open a session.<br />
+              Persistence is owned by this harness — not the vendor demo.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="evidence">
+        <div class="panel">
+          <h2>Evidence stream</h2>
+          <div class="toolbar">
+            <button id="btn-evidence" class="secondary" type="button">Reload</button>
+            <a class="badge" href="/api/artifacts/template" target="_blank">Artifact template</a>
+          </div>
+          <div id="evidence-list" class="evidence-list"></div>
+        </div>
+      </aside>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

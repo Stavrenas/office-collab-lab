@@ -1,0 +1,25 @@
+{
+  "name": "office-collab-lab-harness",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Application integration harness for evaluating Collabora CODE, ONLYOFFICE Community, and Euro-Office",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "generate-corpus": "node scripts/generate-corpus.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.5.0",
+    "nanoid": "^3.3.8",
+    "uuid": "^11.0.5"
+  }
+}

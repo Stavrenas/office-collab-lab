@@ -1,0 +1,17 @@
+node_modules/
+.venv/
+.env
+.DS_Store
+
+# Runtime lab data
+storage/files/
+storage/revisions/
+storage/documents.json
+storage/collabora/
+storage/onlyoffice/
+storage/eurooffice/
+evidence/events-*.jsonl
+evidence/artifacts-*.txt
+
+corpus/.tmp-build/
+*.log

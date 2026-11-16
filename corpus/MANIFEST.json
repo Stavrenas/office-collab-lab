@@ -1,0 +1,17 @@
+[
+  {
+    "file": "01-smoke.docx",
+    "bytes": 1311881,
+    "sha256": "269329fc7ae54b3f289b3ac52efde387edc2e566ef9a48d637e841022c7e0eab"
+  },
+  {
+    "file": "02-smoke.xlsx",
+    "bytes": 4904,
+    "sha256": "21cbe947fe01d6511a17f6d9c9e8200c7ef6cdb33dc7584fb15c84fa23a01b72"
+  },
+  {
+    "file": "03-smoke.pptx",
+    "bytes": 28300,
+    "sha256": "e682889b265d3654151e540110d57de7ed7f08aaded5b36349ee5ef5b3dbed94"
+  }
+]
