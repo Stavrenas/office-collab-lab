@@ -69,12 +69,9 @@ services:
       aliasgroup1: http://office-harness:3100
       username: ${COLLABORA_USERNAME:-admin}
       password: ${COLLABORA_PASSWORD}
-      # TLS terminated at Caddy
-      extra_params: >-
-        --o:ssl.enable=false
-        --o:ssl.termination=true
-        --o:net.proxy_prefix=false
-        --o:net.content_security_policy=frame-ancestors https://${OFFICE_HOST:-office.77.237.239.74.sslip.io} *;
+      # TLS terminated at Caddy. frame_ancestors must allow the harness UI origin
+      # or browsers show "refused to connect" in the iframe.
+      extra_params: "--o:ssl.enable=false --o:ssl.termination=true --o:net.proxy_prefix=false --o:net.frame_ancestors=https://${OFFICE_HOST:-office.77.237.239.74.sslip.io}"
       DONT_GEN_SSL_CERT: "true"
       server_name: ${COLLABORA_HOST:-collabora.77.237.239.74.sslip.io}
     cap_add:
