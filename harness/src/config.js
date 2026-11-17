@@ -33,7 +33,12 @@ const config = {
   storageRoot: process.env.STORAGE_ROOT || path.join(projectRoot, "storage"),
   corpusRoot: process.env.CORPUS_ROOT || path.join(projectRoot, "corpus"),
   evidenceRoot: process.env.EVIDENCE_ROOT || path.join(projectRoot, "evidence"),
-  metaDbPath: process.env.META_DB_PATH || path.join(projectRoot, "storage", "documents.json"),
+  metaDbPath:
+    process.env.META_DB_PATH ||
+    path.join(
+      process.env.STORAGE_ROOT || path.join(projectRoot, "storage"),
+      "documents.json"
+    ),
   eurooffice: {
     id: "eurooffice",
     label: "Euro-Office",

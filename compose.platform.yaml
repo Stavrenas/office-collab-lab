@@ -1,0 +1,104 @@
+# Production on the shared platform host.
+# Secrets: /opt/apps/office-collab-lab/.env
+#
+#   docker compose -f compose.platform.yaml --env-file /opt/apps/office-collab-lab/.env up -d --build
+
+name: office-collab-lab
+
+networks:
+  platform:
+    external: true
+
+volumes:
+  office_storage:
+  office_evidence:
+  office_eo_data:
+  office_eo_logs:
+
+services:
+  harness:
+    build:
+      context: ./harness
+      dockerfile: Dockerfile
+    image: office-collab-harness:latest
+    restart: unless-stopped
+    environment:
+      HARNESS_PORT: "3100"
+      # Editors reach the harness on the platform network
+      HARNESS_PUBLIC_URL: http://office-harness:3100
+      HARNESS_BROWSER_URL: https://${OFFICE_HOST:-office.77.237.239.74.sslip.io}
+      LAB_USERS: ${LAB_USERS:-alice:Alice Evaluator,bob:Bob Evaluator,carol:Carol Evaluator}
+      LAB_SESSION_SECRET: ${LAB_SESSION_SECRET}
+      COLLABORA_PUBLIC_URL: https://${COLLABORA_HOST:-collabora.77.237.239.74.sslip.io}
+      COLLABORA_INTERNAL_URL: http://office-collabora:9980
+      EO_PUBLIC_URL: https://${EUROOFFICE_HOST:-eurooffice.77.237.239.74.sslip.io}
+      EO_INTERNAL_URL: http://office-eurooffice
+      EO_JWT_SECRET: ${EO_JWT_SECRET}
+      STORAGE_ROOT: /data/storage
+      CORPUS_ROOT: /data/corpus
+      EVIDENCE_ROOT: /data/evidence
+      NODE_ENV: production
+    volumes:
+      - office_storage:/data/storage
+      - office_evidence:/data/evidence
+      - ./corpus:/data/corpus:ro
+    networks:
+      platform:
+        aliases: [office-harness]
+    mem_limit: 256m
+    depends_on:
+      - collabora
+      - eurooffice
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3100/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  collabora:
+    image: collabora/code:latest
+    restart: unless-stopped
+    environment:
+      aliasgroup1: http://office-harness:3100
+      username: ${COLLABORA_USERNAME:-admin}
+      password: ${COLLABORA_PASSWORD}
+      # TLS terminated at Caddy
+      extra_params: >-
+        --o:ssl.enable=false
+        --o:ssl.termination=true
+        --o:net.proxy_prefix=false
+        --o:net.content_security_policy=frame-ancestors https://${OFFICE_HOST:-office.77.237.239.74.sslip.io} *;
+      DONT_GEN_SSL_CERT: "true"
+      server_name: ${COLLABORA_HOST:-collabora.77.237.239.74.sslip.io}
+    cap_add:
+      - MKNOD
+    networks:
+      platform:
+        aliases: [office-collabora]
+    mem_limit: 1g
+
+  eurooffice:
+    image: ghcr.io/euro-office/documentserver:latest
+    restart: unless-stopped
+    environment:
+      JWT_ENABLED: "true"
+      JWT_SECRET: ${EO_JWT_SECRET}
+      JWT_HEADER: Authorization
+      JWT_IN_BODY: "true"
+      EXAMPLE_ENABLED: "false"
+      ALLOW_PRIVATE_IP_ADDRESS: "true"
+      ALLOW_META_IP_ADDRESS: "true"
+    volumes:
+      - office_eo_data:/var/www/onlyoffice/Data
+      - office_eo_logs:/var/log/onlyoffice
+    networks:
+      platform:
+        aliases: [office-eurooffice]
+    mem_limit: 1536m

@@ -1,0 +1,38 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: office-collab-lab-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, linux, platform]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sync and deploy
+        run: |
+          set -euo pipefail
+          DEST=/opt/apps/office-collab-lab/src
+          ENV_FILE=/opt/apps/office-collab-lab/.env
+          mkdir -p "$DEST"
+          rsync -a --no-group --delete \
+            --exclude '.git' \
+            --exclude 'node_modules' \
+            --exclude '.venv' \
+            --exclude 'storage/files' \
+            --exclude 'storage/revisions' \
+            --exclude 'evidence' \
+            ./ "$DEST/"
+          docker compose -f "$DEST/compose.platform.yaml" \
+            --env-file "$ENV_FILE" \
+            up -d --build
+          docker compose -f "$DEST/compose.platform.yaml" \
+            --env-file "$ENV_FILE" \
+            ps

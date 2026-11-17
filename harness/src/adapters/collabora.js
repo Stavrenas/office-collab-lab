@@ -15,8 +15,10 @@ async function resolveEditorBaseUrl() {
   if (cachedEditorBase && now - cachedAt < CACHE_MS) return cachedEditorBase;
 
   const publicBase = config.collabora.publicUrl.replace(/\/$/, "");
+  // Prefer internal URL for discovery (Docker network); browser still gets publicBase
+  const discoverBase = (config.collabora.internalUrl || publicBase).replace(/\/$/, "");
   try {
-    const capsRes = await fetch(`${publicBase}/hosting/capabilities`, {
+    const capsRes = await fetch(`${discoverBase}/hosting/capabilities`, {
       signal: AbortSignal.timeout(5000),
     });
     if (capsRes.ok) {
@@ -31,14 +33,14 @@ async function resolveEditorBaseUrl() {
   } catch (_) {}
 
   try {
-    const discRes = await fetch(`${publicBase}/hosting/discovery`, {
+    const discRes = await fetch(`${discoverBase}/hosting/discovery`, {
       signal: AbortSignal.timeout(5000),
     });
     if (discRes.ok) {
       const xml = await discRes.text();
       const m = xml.match(/urlsrc="([^"]+cool\.html)\?/);
       if (m) {
-        // Discovery often omits the published port (server_name=localhost) — rewrite to publicUrl
+        // Rewrite discovery host to the browser-facing public URL
         const u = new URL(m[1], publicBase);
         const pub = new URL(publicBase);
         u.protocol = pub.protocol;
