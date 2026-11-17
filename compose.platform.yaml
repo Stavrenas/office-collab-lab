@@ -84,6 +84,7 @@ services:
   eurooffice:
     image: ghcr.io/euro-office/documentserver:latest
     restart: unless-stopped
+    entrypoint: ["/bin/bash", "/platform-hooks/patch-and-run.sh"]
     environment:
       JWT_ENABLED: "true"
       JWT_SECRET: ${EO_JWT_SECRET}
@@ -92,9 +93,11 @@ services:
       EXAMPLE_ENABLED: "false"
       ALLOW_PRIVATE_IP_ADDRESS: "true"
       ALLOW_META_IP_ADDRESS: "true"
+      FRAME_ANCESTORS_ORIGIN: https://${OFFICE_HOST:-office.77.237.239.74.sslip.io}
     volumes:
       - office_eo_data:/var/www/onlyoffice/Data
       - office_eo_logs:/var/log/onlyoffice
+      - ./platform/eurooffice/patch-and-run.sh:/platform-hooks/patch-and-run.sh:ro
     networks:
       platform:
         aliases: [office-eurooffice]
