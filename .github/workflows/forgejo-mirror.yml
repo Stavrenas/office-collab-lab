@@ -1,0 +1,15 @@
+name: Forgejo mirror
+
+on:
+  push:
+
+concurrency:
+  group: forgejo-mirror-${{ github.repository }}
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    uses: Stavrenas/platform-infra/.github/workflows/forgejo-mirror-sync.yml@main
+    with:
+      forgejo_repo: office-collab-lab
+    secrets: inherit
