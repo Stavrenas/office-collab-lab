@@ -7,9 +7,31 @@ concurrency:
   group: forgejo-mirror-${{ github.repository }}
   cancel-in-progress: true
 
+env:
+  FORGEJO_REPO: office-collab-lab
+
 jobs:
   sync:
-    uses: Stavrenas/platform-infra/.github/workflows/forgejo-mirror-sync.yml@main
-    with:
-      forgejo_repo: office-collab-lab
-    secrets: inherit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mirror-sync on Forgejo
+        env:
+          FORGEJO_TOKEN: ${{ secrets.FORGEJO_TOKEN }}
+          FORGEJO_HOST: ${{ secrets.FORGEJO_HOST || 'git.77.237.239.74.sslip.io' }}
+        run: |
+          set -euo pipefail
+          : "${FORGEJO_TOKEN:?Set Actions secret FORGEJO_TOKEN}"
+          url="https://${FORGEJO_HOST}/api/v1/repos/platform/${FORGEJO_REPO}/mirror-sync"
+          code=$(curl -sS -o /tmp/fj-sync.json -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: token ${FORGEJO_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d '{}' \
+            "$url")
+          echo "HTTP $code  $url"
+          cat /tmp/fj-sync.json || true
+          echo
+          case "$code" in
+            200|201|202|204) exit 0 ;;
+            *) exit 1 ;;
+          esac
