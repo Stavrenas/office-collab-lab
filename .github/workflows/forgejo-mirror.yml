@@ -12,6 +12,8 @@ env:
 
 jobs:
   sync:
+    # GitHub only. After mirror-sync, Forgejo sees this file too; skip it there.
+    if: github.server_url == 'https://github.com'
     # Must run on the VPS — GitHub-hosted IPs are blocked by CrowdSec EU geo policy.
     runs-on: [self-hosted, linux, platform]
     steps:

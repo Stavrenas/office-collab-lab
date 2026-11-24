@@ -10,7 +10,7 @@ Collabora CODE + Euro-Office evaluation harness on the platform VPS.
 | Euro-Office | https://eurooffice.77.237.239.74.sslip.io |
 | Compose | `compose.platform.yaml` |
 | Deploy path | `/opt/apps/office-collab-lab/src` |
-| CI | `.github/workflows/deploy.yml` → push `main` |
+| CI | `.forgejo/workflows/deploy.yml` after GitHub `main` is mirrored |
 
 Infra (Caddy, network): [platform-infra](https://github.com/Stavrenas/platform-infra).
 
@@ -40,7 +40,7 @@ EOF
 
 ## CI deploy
 
-Push to `main`. Self-hosted runner `platform` rsyncs to `/opt/apps/office-collab-lab/src` and runs:
+Push to GitHub `main`. Forgejo mirrors the repo, then `.forgejo/workflows/deploy.yml` on the host runner (`platform`) rsyncs to `/opt/apps/office-collab-lab/src` and runs:
 
 ```bash
 docker compose -f compose.platform.yaml --env-file /opt/apps/office-collab-lab/.env up -d --build

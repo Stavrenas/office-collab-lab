@@ -1,5 +1,8 @@
 name: Deploy
 
+# Forgejo Actions on the VPS host runner (label `platform`).
+# A GitHub push only mirror-syncs; this file is what builds and deploys.
+
 on:
   push:
     branches: [main]
@@ -11,7 +14,7 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: [self-hosted, linux, platform]
+    runs-on: platform
     steps:
       - name: Checkout
         uses: actions/checkout@v4
